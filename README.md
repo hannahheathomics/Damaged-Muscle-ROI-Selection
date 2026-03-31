@@ -1,8 +1,34 @@
-**Purpose:** Crops square ROIs from fluorescence muscle cross-section images for CSA analysis, specifically focusing on areas with damaged muscle fibers.
+# Damaged Muscle ROI Selector
 
-- Input: RGB/RGBA PNG (Green = Laminin, Blue = DAPI)
-- Output: Single-channel laminin TIFF (uint8) + RGB QC preview TIFF with yellow ROI box
+Crops square ROIs from fluorescence muscle cross-section images for cross-sectional area (CSA) analysis, targeting regions with damaged muscle fibers.
 
-ROI selection logic: Identifies the largest tissue region (green/blue signal) and applies an edge margin to avoid capturing edge fibers. For each image, the algorithm determines how much of the interior search zone is actual tissue, then requires each candidate ROI contain at least 70% of total tissue area. A square window then slides across the interior to find the patch with the highest mean laminin signal within tissue pixels. The idea is that higher laminin density per unit area = more cell borders = smaller/damaged fibers.
+---
 
-Troubleshooting: Individual images can be re-run with adjusted parameters to correct for common failure cases: nerve/connective tissue fragments that outscore the muscle (corrected via blue-channel exclusion), and excess background inclusion (corrected via stricter tissue threshold and larger edge margin).
+## Overview
+
+| | |
+|---|---|
+| **Input** | RGB/RGBA PNG — Green = Laminin, Blue = DAPI |
+| **Output** | Single-channel laminin TIFF (uint8) + RGB QC preview TIFF with yellow ROI box |
+
+---
+
+## ROI Selection Logic
+
+1. Identifies the largest tissue region from the combined green/blue signal
+2. Applies an edge margin to exclude edge fibers from the search zone
+3. Measures actual tissue density across the interior and requires each candidate ROI to meet at least 70% of that value
+4. Slides a square window across the interior to find the patch with the highest mean laminin signal within tissue pixels
+
+> Higher laminin density per unit area = more cell borders = smaller/damaged fibers
+
+---
+
+## Troubleshooting
+
+Individual images can be re-run with adjusted parameters to correct for common failure cases:
+
+| Problem | Fix |
+|---|---|
+| Nerve/connective tissue fragment outscoring muscle | Blue-channel exclusion mask |
+| Excess background included in ROI | Stricter tissue threshold + larger edge margin |
